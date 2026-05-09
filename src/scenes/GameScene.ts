@@ -4,6 +4,7 @@ import {
   TileType, SpellType, BOARD_OFFSET_X, BOARD_OFFSET_Y,
   BOARD_COLS, BOARD_ROWS, TILE_SIZE, TILE_GAP, ANIM,
 } from '../config/Constants';
+import { createBottomNav } from '../ui/BottomNav';
 import { Board } from '../game/board/Board';
 import { MatchGroup } from '../game/board/TileTypes';
 import { SpellSystem } from '../game/spells/SpellSystem';
@@ -90,6 +91,12 @@ export class GameScene extends Phaser.Scene {
     this.createObjectivesPanel();
     this.createPortalIndicators();
     this.createAmbientEffects();
+
+    createBottomNav(this, 'Home', {
+      Shop:    'StoreScene',
+      Trophy:  'LeaderboardScene',
+      Home:    () => this.quitGame(),
+    });
 
     // Initial HUD update
     this.hud.updateMoves(this.movesLeft);

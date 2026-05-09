@@ -1,87 +1,123 @@
 import Phaser from 'phaser';
-import { PALETTE, GAME_WIDTH, GAME_HEIGHT, LEVELS, DEPTHS } from '../config/Constants';
+import { PALETTE, GAME_WIDTH, GAME_HEIGHT, DEPTHS } from '../config/Constants';
+import { createBottomNav } from '../ui/BottomNav';
 
-const UNLOCKED_LEVELS = 6; // for prototype
-
-// Level node positions matching the winding path in ui_levels.png
+// Levels start from 1 — positions match the winding path nodes in ui_levels.png
 const LEVEL_NODES: { id: number; x: number; y: number }[] = [
-  { id: 6,  x: 150, y: 720 },
-  { id: 7,  x: 228, y: 668 },
-  { id: 8,  x: 278, y: 608 },
-  { id: 9,  x: 155, y: 553 },
-  { id: 10, x: 260, y: 497 },
-  { id: 11, x: 185, y: 442 },
-  { id: 12, x: 295, y: 388 },
-  { id: 13, x: 225, y: 333 },
-  { id: 14, x: 200, y: 278 },
-  { id: 15, x: 225, y: 228 },
+  { id: 1,  x: 150, y: 720 },
+  { id: 2,  x: 228, y: 668 },
+  { id: 3,  x: 278, y: 608 },
+  { id: 4,  x: 155, y: 553 },
+  { id: 5,  x: 260, y: 497 },
+  { id: 6,  x: 185, y: 442 },
+  { id: 7,  x: 295, y: 388 },
+  { id: 8,  x: 225, y: 333 },
+  { id: 9,  x: 200, y: 278 },
+  { id: 10, x: 225, y: 228 },
 ];
 
+const CURRENT_LEVEL = 1; // only the first level is open in the prototype
+
 export class LevelSelectScene extends Phaser.Scene {
+  private autoPlay = false;
+
   constructor() { super({ key: 'LevelSelectScene' }); }
+
+  init(data: { autoPlay?: boolean }): void {
+    this.autoPlay = data?.autoPlay ?? false;
+  }
 
   create(): void {
     this.cameras.main.fadeIn(300, 0, 0, 0);
+
     this.add.image(GAME_WIDTH / 2, GAME_HEIGHT / 2, 'ui_levels')
       .setDisplaySize(GAME_WIDTH, GAME_HEIGHT)
       .setDepth(DEPTHS.bg);
 
     this.createLevelNodes();
-    this.createBottomNavZones();
+    createBottomNav(this, 'Home', {
+      Shop:   'StoreScene',
+      Trophy: 'LeaderboardScene',
+      Home:   'HomeScene',
+    });
     this.createAmbientParticles();
+
+    if (this.autoPlay) {
+      this.scheduleAutoPlay();
+    }
   }
 
   private createLevelNodes(): void {
     LEVEL_NODES.forEach(({ id, x, y }) => {
-      const isUnlocked = id <= UNLOCKED_LEVELS;
-      const isCurrent  = id === UNLOCKED_LEVELS;
-
-      // Invisible hit zone over each node
-      const zone = this.add.zone(x, y, 68, 68)
-        .setDepth(DEPTHS.ui);
+      const isUnlocked = id <= CURRENT_LEVEL;
+      const zone = this.add.zone(x, y, 68, 68).setDepth(DEPTHS.ui);
 
       if (!isUnlocked) return;
 
       zone.setInteractive({ useHandCursor: true });
 
-      // Glow ring for current level
-      if (isCurrent) {
-        const glow = this.add.graphics().setDepth(DEPTHS.tiles - 1);
-        glow.lineStyle(4, PALETTE.gold, 0.9);
-        glow.strokeCircle(x, y, 38);
-        this.tweens.add({
-          targets: glow,
-          alpha: { from: 0.5, to: 1 },
-          scaleX: { from: 0.95, to: 1.05 },
-          scaleY: { from: 0.95, to: 1.05 },
-          duration: 900, yoyo: true, repeat: -1, ease: 'Sine.easeInOut',
-        });
-      }
-
-      zone.on('pointerdown', () => {
-        this.cameras.main.flash(150, 80, 40, 160, false);
-        this.cameras.main.fadeOut(280, 0, 0, 0);
-        this.cameras.main.once('camerafadeoutcomplete', () =>
-          this.scene.start('GameScene', { levelId: id }),
-        );
+      // Gold glow ring over the current/unlocked level
+      const glow = this.add.graphics().setDepth(DEPTHS.tiles - 1);
+      glow.lineStyle(4, PALETTE.gold, 0.9);
+      glow.strokeCircle(x, y, 38);
+      this.tweens.add({
+        targets: glow,
+        alpha: { from: 0.5, to: 1 },
+        scaleX: { from: 0.92, to: 1.08 },
+        scaleY: { from: 0.92, to: 1.08 },
+        duration: 900, yoyo: true, repeat: -1, ease: 'Sine.easeInOut',
       });
+
+      zone.on('pointerdown', () => this.startLevel(id));
     });
   }
 
-  private createBottomNavZones(): void {
-    const navItems = [
-      { x: 48,  action: () => this.scene.start('StoreScene') },
-      { x: 130, action: () => this.scene.start('LeaderboardScene') },
-      { x: 195, action: () => this.scene.start('HomeScene') },
-      { x: 262, action: null },
-      { x: 340, action: null },
-    ] as const;
+  private startLevel(id: number): void {
+    this.cameras.main.flash(150, 80, 40, 160, false);
+    this.cameras.main.fadeOut(280, 0, 0, 0);
+    this.cameras.main.once('camerafadeoutcomplete', () =>
+      this.scene.start('GameScene', { levelId: id }),
+    );
+  }
 
-    navItems.forEach(({ x, action }) => {
-      const zone = this.add.zone(x, 812, 72, 80)
-        .setInteractive({ useHandCursor: !!action })
-        .setDepth(DEPTHS.ui);
-      if (action) zone.on('pointerdown', action);
+  private scheduleAutoPlay(): void {
+    let count = 3;
+
+    // Dimmed banner behind countdown
+    const banner = this.add.graphics().setDepth(DEPTHS.overlay);
+    banner.fillStyle(0x000000, 0.55);
+    banner.fillRoundedRect(GAME_WIDTH / 2 - 120, GAME_HEIGHT / 2 - 38, 240, 68, 14);
+
+    const countText = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 - 6, `Starting in ${count}…`, {
+      fontFamily: 'Georgia, serif',
+      fontSize: '22px',
+      fontStyle: 'bold',
+      color: '#ffd700',
+      stroke: '#000000',
+      strokeThickness: 4,
+    }).setOrigin(0.5).setDepth(DEPTHS.overlay + 1);
+
+    // Tick down every second
+    this.time.addEvent({
+      delay: 1000,
+      repeat: count - 1,
+      callback: () => {
+        count--;
+        countText.setText(count > 0 ? `Starting in ${count}…` : 'Get Ready!');
+      },
+    });
+
+    // After 3 seconds launch level 1
+    this.time.delayedCall(3000, () => {
+      this.tweens.add({
+        targets: [banner, countText],
+        alpha: 0, duration: 200,
+        onComplete: () => {
+          banner.destroy();
+          countText.destroy();
+          this.startLevel(1);
+        },
+      });
     });
   }
 

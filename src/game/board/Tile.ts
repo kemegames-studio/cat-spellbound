@@ -34,7 +34,6 @@ export class Tile extends Phaser.GameObjects.Container {
 
     this.buildVisual(scene, type);
     scene.add.existing(this);
-    this.startIdleAnimation();
   }
 
   private buildVisual(scene: Phaser.Scene, type: TileType): void {
@@ -126,6 +125,7 @@ export class Tile extends Phaser.GameObjects.Container {
 
   playFallAnimation(targetY: number, delay: number = 0, onComplete?: () => void): void {
     this.isFalling = true;
+    this.stopIdleAnimation();
     this.scene.tweens.add({
       targets: this,
       y: targetY,
@@ -136,6 +136,7 @@ export class Tile extends Phaser.GameObjects.Container {
         this.isFalling = false;
         onComplete?.();
         this.playLandBounce();
+        this.startIdleAnimation();
       },
     });
   }
@@ -194,6 +195,9 @@ export class Tile extends Phaser.GameObjects.Container {
   }
 
   playSpawnAnimation(fromY: number): void {
+    // Stop idle tween to avoid y-property conflict during spawn
+    this.stopIdleAnimation();
+
     const originalY = this.y;
     this.y = fromY;
     this.setAlpha(0);
@@ -207,6 +211,7 @@ export class Tile extends Phaser.GameObjects.Container {
       scaleY: 1,
       duration: 280,
       ease: 'Back.easeOut',
+      onComplete: () => this.startIdleAnimation(),
     });
   }
 

@@ -1,0 +1,19 @@
+{
+  "name": "cat-spellbound",
+  "version": "0.1.0",
+  "description": "Cat Spellbound — A premium magical puzzle adventure",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "phaser": "^3.80.1"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.5",
+    "vite": "^5.2.12",
+    "@types/node": "^20.12.12"
+  }
+}

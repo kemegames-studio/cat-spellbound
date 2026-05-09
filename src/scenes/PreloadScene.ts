@@ -98,7 +98,22 @@ export class PreloadScene extends Phaser.Scene {
     if (bar) bar.style.width = `${Math.round(pct * 100)}%`;
   }
 
+  private extractNavBarFrame(): void {
+    // Slice the bottom nav strip from ui_levels.png and register it as 'nav_bar'
+    // so every scene can render it without re-drawing.
+    const NAV_H_PCT = 90 / GAME_HEIGHT;
+    const tex = this.textures.get('ui_levels');
+    const src = tex.source[0];
+    const navY = Math.round((1 - NAV_H_PCT) * src.height);
+    tex.add('nav_bar', 0, 0, navY, src.width, src.height - navY);
+    // Phaser's tex.add() sets firstFrame to the new frame name, which would make
+    // add.image(x, y, 'ui_levels') use the nav strip instead of the full image.
+    // Restore __BASE so unframed uses keep rendering the full background.
+    tex.firstFrame = '__BASE';
+  }
+
   create(): void {
+    this.extractNavBarFrame();
     this.buildLoadingUI();
     this.updateProgress(1);
     this.time.delayedCall(500, () => {

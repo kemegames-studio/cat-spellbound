@@ -1,11 +1,13 @@
 import Phaser from 'phaser';
 import { GAME_WIDTH, GAME_HEIGHT, PALETTE } from './Constants';
-import { BootScene }        from '../scenes/BootScene';
-import { PreloadScene }     from '../scenes/PreloadScene';
-import { HomeScene }        from '../scenes/HomeScene';
-import { LevelSelectScene } from '../scenes/LevelSelectScene';
-import { GameScene }        from '../scenes/GameScene';
-import { VictoryScene }     from '../scenes/VictoryScene';
+import { BootScene }         from '../scenes/BootScene';
+import { PreloadScene }      from '../scenes/PreloadScene';
+import { HomeScene }         from '../scenes/HomeScene';
+import { LevelSelectScene }  from '../scenes/LevelSelectScene';
+import { GameScene }         from '../scenes/GameScene';
+import { VictoryScene }      from '../scenes/VictoryScene';
+import { StoreScene }        from '../scenes/StoreScene';
+import { LeaderboardScene }  from '../scenes/LeaderboardScene';
 
 export const gameConfig: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO,
@@ -30,6 +32,8 @@ export const gameConfig: Phaser.Types.Core.GameConfig = {
     LevelSelectScene,
     GameScene,
     VictoryScene,
+    StoreScene,
+    LeaderboardScene,
   ],
   render: {
     antialias: true,

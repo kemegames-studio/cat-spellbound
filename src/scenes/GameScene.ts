@@ -101,14 +101,9 @@ export class GameScene extends Phaser.Scene {
   }
 
   private createBackground(): void {
-    this.add.image(GAME_WIDTH / 2, GAME_HEIGHT / 2, 'bg_game').setDepth(DEPTHS.bg);
-
-    // Ambient glow blobs
-    const glowG = this.add.graphics().setDepth(DEPTHS.bg + 1);
-    glowG.fillStyle(PALETTE.purple, 0.08);
-    glowG.fillCircle(50, 300, 120);
-    glowG.fillStyle(PALETTE.purpleLight, 0.05);
-    glowG.fillCircle(360, 600, 140);
+    this.add.image(GAME_WIDTH / 2, GAME_HEIGHT / 2, 'ui_gameplay')
+      .setDisplaySize(GAME_WIDTH, GAME_HEIGHT)
+      .setDepth(DEPTHS.bg);
   }
 
   private createBoardBackground(): void {
@@ -118,9 +113,9 @@ export class GameScene extends Phaser.Scene {
     const by = BOARD_OFFSET_Y - 10;
 
     const bg = this.add.graphics().setDepth(DEPTHS.board - 1);
-    bg.fillStyle(0x0d0525, 0.92);
+    bg.fillStyle(0x0d0525, 0.72);
     bg.fillRoundedRect(bx, by, boardW, boardH, 18);
-    bg.lineStyle(2, PALETTE.purpleLight, 0.25);
+    bg.lineStyle(2, PALETTE.purpleLight, 0.20);
     bg.strokeRoundedRect(bx, by, boardW, boardH, 18);
 
     // Inner grid hint

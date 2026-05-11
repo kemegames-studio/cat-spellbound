@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Cat Spellbound</string>
+    <string name="title_activity_main">Cat Spellbound</string>
+    <string name="package_name">com.kemegames.catspellbound</string>
+    <string name="custom_url_scheme">com.kemegames.catspellbound</string>
+</resources>

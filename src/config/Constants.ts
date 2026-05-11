@@ -45,7 +45,13 @@ export const BOARD_OFFSET_Y = 220;
 
 export const MATCH_MIN = 3;
 
+/** Charge Up alias — used by the modular board layer. */
+export const CHAIN_MIN = MATCH_MIN;
+
 export const SPELL_CHARGE_NEEDED = 12;
+
+/** Charge Up alias — used by the ability/power layer. */
+export const COMPONENT_CHARGE_NEEDED = SPELL_CHARGE_NEEDED;
 
 export const DEPTHS = {
   bg:         0,
@@ -60,12 +66,19 @@ export const DEPTHS = {
 } as const;
 
 export const ANIM = {
-  tileSwap:       200,
-  tileFall:       280,
-  tileDestroy:    180,
-  spellCast:      600,
+  // ── Core board ───────────────────────────────
+  tileSwap:       200,   // swap slide duration (ms)
+  tileFall:       280,   // gravity drop base duration
+  tileDestroy:    180,   // match pop + fade out
+  tileSpawn:      280,   // refill tile drop-in
+  // ── Cascade / combo ──────────────────────────
+  cascadeDelay:   100,   // pause between cascade rounds
+  comboDelay:     120,   // stagger between individual tile clears
+  comboFlash:     400,   // full-screen combo flash
+  // ── Spells / abilities ───────────────────────
+  spellCast:      600,   // ability cast buildup
+  // ── Scene ────────────────────────────────────
   screenShake:    300,
-  comboDelay:     120,
 } as const;
 
 export const LEVELS = [

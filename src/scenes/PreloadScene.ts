@@ -1,131 +1,108 @@
+// ─────────────────────────────────────────────────────────────────────────────
+// PreloadScene.ts
+//
+// Silent background asset loader — never has a camera or visible UI.
+// CatSplashScene launches this as a parallel scene and owns the progress bar.
+//
+// Events emitted (listened to by CatSplashScene):
+//   'load-progress'    (value: number 0–1)   — during preload(), on progress
+//   'preload-complete' ()                     — in create(), after all assets
+//
+// One-time post-load setup:
+//   • Extracts the nav-bar texture frame from ui_levels.png so any scene can
+//     render it without redundant image loads.
+//   • Removes the HTML loading overlay if it is still in the DOM.
+// ─────────────────────────────────────────────────────────────────────────────
+
 import Phaser from 'phaser';
-import { PALETTE, GAME_WIDTH, GAME_HEIGHT } from '../config/Constants';
+import { GAME_HEIGHT } from '../config/Constants';
+import { SCENE }       from './SceneKeys';
 
 export class PreloadScene extends Phaser.Scene {
-  private loadingBar!: Phaser.GameObjects.Graphics;
-  private loadingFill!: Phaser.GameObjects.Graphics;
-  private loadingText!: Phaser.GameObjects.Text;
-  private splashShown = false;
+  constructor() { super({ key: SCENE.Preload }); }
 
-  constructor() { super({ key: 'PreloadScene' }); }
+  // ── Asset manifest ─────────────────────────────────────────────────────────
 
   preload(): void {
-    // Load all real UI assets
-    this.load.image('splash',        'assets/splash.png');
-    this.load.image('ui_home',       'assets/ui_home.png');
-    this.load.image('ui_levels',     'assets/ui_levels.png');
-    this.load.image('ui_gameplay',   'assets/ui_gameplay.jpg');
-    this.load.image('ui_victory',    'assets/ui_victory.png');
-    this.load.image('ui_store',      'assets/ui_store.png');
-    this.load.image('ui_leaderboard','assets/ui_leaderboard.png');
+    // ── Full-screen reference backgrounds / UI sheets ──────────────────────
+    this.load.image('splash',          'assets/splash.png');
+    this.load.image('ui_home',         'assets/ui_home.jpg');
+    this.load.image('ui_levels',       'assets/ui_levels.png');
+    this.load.image('ui_gameplay',     'assets/ui_gameplay.jpg');
+    this.load.image('ui_victory',      'assets/ui_victory.png');
+    this.load.image('ui_store',        'assets/ui_store.png');
+    this.load.image('ui_leaderboard',  'assets/ui_leaderboard.png');
 
+    // ── SVG icons (rasterised at import-time by Phaser) ────────────────────
+    this.load.svg('icon_settings',    'assets/icons/icon_settings.svg',  { width: 156, height: 156 });
+    this.load.svg('icon_coin',        'assets/icons/icon_coin.svg',      { width: 44,  height: 44  });
+    this.load.svg('icon_btn_plus',    'assets/icons/icon_btn_plus.svg',  { width: 32,  height: 32  });
+    this.load.svg('icon_nav_home',    'assets/icons/icon_nav_home.svg',  { width: 72,  height: 72  });
+    this.load.svg('icon_nav_cats',    'assets/icons/icon_nav_cats.svg',  { width: 72,  height: 72  });
+    this.load.svg('icon_nav_spells',  'assets/icons/icon_nav_spells.svg',{ width: 72,  height: 72  });
+    this.load.svg('icon_nav_quests',  'assets/icons/icon_nav_quests.svg',{ width: 72,  height: 72  });
+
+    // ── PNG icons ──────────────────────────────────────────────────────────
+    this.load.image('tab_home',               'assets/icons/tab_home.png');
+    this.load.image('tab_store',              'assets/icons/tab_store.png');
+    this.load.image('tab_profile',            'assets/icons/tab_profile.png');
+    this.load.image('tab_social',             'assets/icons/tab_social.png');
+    this.load.image('tab_rank',               'assets/icons/tab_rank.png');
+    this.load.image('icon_coin_paw',          'assets/icons/icon_coin_paw.png');
+    this.load.image('icon_heart',             'assets/icons/icon_heart.png');
+    this.load.image('ui_plus_icon',           'assets/icons/ui_plus_icon.png');
+    this.load.image('ui_holder',              'assets/icons/ui_holder.png');
+    this.load.image('ui_green_circle_button', 'assets/icons/ui_green_circle_button.png');
+
+    // ── Progress forwarding (CatSplashScene owns the visual bar) ──────────
     this.load.on('progress', (value: number) => {
-      this.updateProgress(value);
+      this.events.emit('load-progress', value);
     });
 
     this.load.on('complete', () => {
-      this.updateProgress(1);
+      this.events.emit('load-progress', 1);
     });
   }
 
-  private buildLoadingUI(): void {
-    // Attempt to show splash image if already loaded, else dark screen
-    try {
-      const splashImg = this.add.image(GAME_WIDTH / 2, GAME_HEIGHT / 2, 'splash')
-        .setDisplaySize(GAME_WIDTH, GAME_HEIGHT)
-        .setDepth(0);
-      this.splashShown = true;
-
-      // Dim overlay so bar is readable
-      const dim = this.add.graphics().setDepth(1);
-      dim.fillStyle(0x000000, 0.35);
-      dim.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
-    } catch {
-      const bg = this.add.graphics().setDepth(0);
-      bg.fillStyle(PALETTE.bgDeep, 1);
-      bg.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
-    }
-
-    // Loading bar
-    const barW = 260, barH = 10;
-    const barX = (GAME_WIDTH - barW) / 2;
-    const barY = GAME_HEIGHT - 90;
-
-    const barBg = this.add.graphics().setDepth(2);
-    barBg.fillStyle(0x221144, 0.9);
-    barBg.fillRoundedRect(barX - 3, barY - 3, barW + 6, barH + 6, 8);
-    barBg.lineStyle(1.5, PALETTE.purpleLight, 0.5);
-    barBg.strokeRoundedRect(barX - 3, barY - 3, barW + 6, barH + 6, 8);
-
-    this.loadingFill = this.add.graphics().setDepth(3);
-
-    this.loadingText = this.add.text(GAME_WIDTH / 2, barY - 22, 'Loading...', {
-      fontFamily: 'Arial, sans-serif',
-      fontSize: '13px',
-      color: '#9d6fff',
-      letterSpacing: 3,
-    }).setOrigin(0.5).setDepth(3);
-
-    this._barX = barX; this._barY = barY; this._barW = barW; this._barH = barH;
-  }
-
-  private _barX = 0; private _barY = 0; private _barW = 0; private _barH = 0;
-
-  private updateProgress(value: number): void {
-    if (!this.loadingFill) return;
-    const pct = Math.min(value, 1);
-    this.loadingFill.clear();
-    if (pct > 0.01) {
-      this.loadingFill.fillStyle(PALETTE.gold, 1);
-      this.loadingFill.fillRoundedRect(
-        this._barX, this._barY,
-        this._barW * pct, this._barH,
-        5,
-      );
-      this.loadingFill.fillStyle(0xffffff, 0.25);
-      this.loadingFill.fillRoundedRect(
-        this._barX + 2, this._barY + 1,
-        this._barW * pct - 4, this._barH * 0.4,
-        3,
-      );
-    }
-    if (this.loadingText) {
-      this.loadingText.setText(pct >= 1 ? 'Ready!' : `Loading... ${Math.round(pct * 100)}%`);
-    }
-
-    // Also update HTML overlay bar
-    const bar = document.getElementById('loading-bar');
-    if (bar) bar.style.width = `${Math.round(pct * 100)}%`;
-  }
-
-  private extractNavBarFrame(): void {
-    // Slice the bottom nav strip from ui_levels.png and register it as 'nav_bar'
-    // so every scene can render it without re-drawing.
-    const NAV_H_PCT = 90 / GAME_HEIGHT;
-    const tex = this.textures.get('ui_levels');
-    const src = tex.source[0];
-    const navY = Math.round((1 - NAV_H_PCT) * src.height);
-    tex.add('nav_bar', 0, 0, navY, src.width, src.height - navY);
-    // Phaser's tex.add() sets firstFrame to the new frame name, which would make
-    // add.image(x, y, 'ui_levels') use the nav strip instead of the full image.
-    // Restore __BASE so unframed uses keep rendering the full background.
-    tex.firstFrame = '__BASE';
-  }
+  // ── Post-load setup ────────────────────────────────────────────────────────
 
   create(): void {
     this.extractNavBarFrame();
-    this.buildLoadingUI();
-    this.updateProgress(1);
-    this.time.delayedCall(500, () => {
-      const overlay = document.getElementById('loading-overlay');
-      if (overlay) {
-        overlay.classList.add('hidden');
-        setTimeout(() => overlay.remove(), 600);
-      }
-      this.cameras.main.fadeOut(300, 0, 0, 0);
-      this.cameras.main.once('camerafadeoutcomplete', () => {
-        this.scene.start('HomeScene');
-      });
-    });
+    this.removeHtmlOverlay();
+    // Signal CatSplashScene (or any launcher listening on this scene)
+    this.events.emit('preload-complete');
+  }
+
+  // ── Helpers ────────────────────────────────────────────────────────────────
+
+  /**
+   * Slice the bottom nav strip from ui_levels.png and register it as a named
+   * frame ('nav_bar') so any scene can render it via:
+   *   this.add.image(x, y, 'ui_levels', 'nav_bar')
+   */
+  private extractNavBarFrame(): void {
+    const NAV_H_PCT = 90 / GAME_HEIGHT;
+    const tex = this.textures.get('ui_levels');
+    const src = tex.source[0];
+    if (!src) return;
+
+    const navY = Math.round((1 - NAV_H_PCT) * src.height);
+    tex.add('nav_bar', 0, 0, navY, src.width, src.height - navY);
+
+    // Restore __BASE so unframed uses keep rendering the full background
+    tex.firstFrame = '__BASE';
+  }
+
+  /** Remove the HTML loading overlay if it is still in the DOM. */
+  private removeHtmlOverlay(): void {
+    const overlay = document.getElementById('loading-overlay');
+    if (overlay) {
+      overlay.classList.add('hidden');
+      setTimeout(() => overlay.remove(), 600);
+    }
+
+    // Update the HTML progress bar to 100 % in case it was never synced
+    const bar = document.getElementById('loading-bar');
+    if (bar) bar.style.width = '100%';
   }
 }

@@ -1,9 +1,24 @@
 import Phaser from 'phaser';
 import { PALETTE, TILE_COLORS, TILE_SIZE, TileType } from '../config/Constants';
 import { fillStar } from '../utils/GraphicsUtils';
+import { SCENE } from './SceneKeys';
+
+// ─────────────────────────────────────────────────────────────────────────────
+// BootScene
+//
+// Runs once at startup, never revisited.
+// Responsibilities:
+//   1. Generate all procedural textures (tiles, UI, particles, backgrounds,
+//      cat sprite) synchronously via Graphics.generateTexture().
+//   2. Hand off immediately to the splash pipeline.
+//
+// There is no visible UI here — the background colour from GameConfig
+// (PALETTE.bgDeep) fills the screen while generation runs, which completes
+// within a single frame.  No camera fade is needed or desirable.
+// ─────────────────────────────────────────────────────────────────────────────
 
 export class BootScene extends Phaser.Scene {
-  constructor() { super({ key: 'BootScene' }); }
+  constructor() { super({ key: SCENE.Boot }); }
 
   create(): void {
     this.generateTileTextures();
@@ -11,7 +26,7 @@ export class BootScene extends Phaser.Scene {
     this.generateParticleTextures();
     this.generateBgTexture();
     this.generateCatTexture();
-    this.scene.start('PreloadScene');
+    this.scene.start(SCENE.KemeSplash);
   }
 
   private generateTileTextures(): void {

@@ -36,9 +36,10 @@ export class LevelSelectScene extends Phaser.Scene {
 
     this.createLevelNodes();
     createBottomNav(this, 'Home', {
-      Shop:   'StoreScene',
-      Trophy: 'LeaderboardScene',
-      Home:   'HomeScene',
+      Home:    'HomeScene',
+      Shop:    'StoreScene',
+      Social:  'LeaderboardScene',
+      Profile: 'LeaderboardScene',
     });
     this.createAmbientParticles();
 

@@ -1,121 +1,105 @@
+// ─────────────────────────────────────────────────────────────────────────────
+// HomeScene.ts
+//
+// Main menu / hub screen.
+//
+// The full UI is baked into ui_home.jpg (SVG-exported design).  We place
+// transparent, interactive hit-zones on top of each tappable element.
+//
+// Source image: 768 × 1376 px → game canvas: 390 × 844 px
+//   scale X = 390 / 768 ≈ 0.5078
+//   scale Y = 844 / 1376 ≈ 0.6134
+// All coordinates are in game-space (already scaled).
+//
+// Navigation uses SceneNavigator so transition timings are centralised and
+// the double-tap guard fires automatically.
+// ─────────────────────────────────────────────────────────────────────────────
+
 import Phaser from 'phaser';
-import { PALETTE, GAME_WIDTH, GAME_HEIGHT, DEPTHS } from '../config/Constants';
-import { createBottomNav } from '../ui/BottomNav';
+import { GAME_WIDTH, GAME_HEIGHT, DEPTHS } from '../config/Constants';
+import { SCENE }                  from './SceneKeys';
+import type { SceneKey }          from './SceneKeys';
+import { SceneNavigator }         from './SceneNavigator';
+import { SceneDebug }             from './SceneDebug';
 
 export class HomeScene extends Phaser.Scene {
-  constructor() { super({ key: 'HomeScene' }); }
+  private dbg!: SceneDebug;
+
+  constructor() { super({ key: SCENE.Home }); }
+
+  // ── Lifecycle ─────────────────────────────────────────────────────────────
 
   create(): void {
-    this.cameras.main.fadeIn(400, 0, 0, 0);
-    this.createBackground();
-    this.createPlayButton();
-    this.createCoinDisplay();
-    this.createAmbientParticles();
-    this.createWandSparkles();
-    createBottomNav(this, 'Home', {
-      Shop:    'StoreScene',
-      Trophy:  'LeaderboardScene',
-    });
-  }
+    this.dbg = SceneDebug.attach(this);
+    this.dbg.setState('home');
 
-  private createBackground(): void {
+    SceneNavigator.fadeInPurple(this);
+
+    // Full-screen background image
     this.add.image(GAME_WIDTH / 2, GAME_HEIGHT / 2, 'ui_home')
       .setDisplaySize(GAME_WIDTH, GAME_HEIGHT)
       .setDepth(DEPTHS.bg);
+
+    this.addHitZones();
   }
 
-  private createPlayButton(): void {
-    // Settings gear (top-left)
-    this.add.zone(28, 32, 52, 52)
-      .setInteractive({ useHandCursor: true })
-      .setDepth(DEPTHS.ui);
+  // ── Hit-zone helpers ──────────────────────────────────────────────────────
 
-    // PLAY button — center x≈195, y≈625, ~190×55
-    const playZone = this.add.zone(195, 625, 190, 55)
-      .setInteractive({ useHandCursor: true })
-      .setDepth(DEPTHS.ui);
+  /**
+   * Thin transparent Zone covering a tappable area.
+   * When `onTap` is provided the cursor becomes a hand and the tap fires.
+   */
+  private zone(
+    cx: number, cy: number,
+    w:  number, h:  number,
+    onTap?: () => void,
+  ): Phaser.GameObjects.Zone {
+    const z = this.add.zone(cx, cy, w, h)
+      .setInteractive({ useHandCursor: !!onTap })
+      .setDepth(DEPTHS.popup);
 
-    playZone.on('pointerdown', () => {
-      this.cameras.main.flash(200, 80, 40, 160, false);
-      this.tweens.add({
-        targets: playZone,
-        scaleX: 0.94, scaleY: 0.94,
-        duration: 80, yoyo: true, ease: 'Power2',
-        onComplete: () => {
-          this.cameras.main.fadeOut(300, 0, 0, 0);
-          this.cameras.main.once('camerafadeoutcomplete', () =>
-            // autoPlay: true triggers the 3-second countdown in LevelSelectScene
-            this.scene.start('LevelSelectScene', { autoPlay: true }),
-          );
-        },
+    if (onTap) {
+      z.on('pointerdown', () => {
+        this.cameras.main.flash(120, 255, 255, 255, false);
+        onTap();
       });
-    });
-
-    // Pulsing glow ring over the Play button
-    const playGlow = this.add.graphics().setDepth(DEPTHS.ui - 1);
-    playGlow.lineStyle(3, PALETTE.green, 0.6);
-    playGlow.strokeRoundedRect(195 - 95, 625 - 27, 190, 54, 27);
-    this.tweens.add({
-      targets: playGlow,
-      alpha: { from: 0.4, to: 1 },
-      duration: 1200, yoyo: true, repeat: -1, ease: 'Sine.easeInOut',
-    });
+    }
+    return z;
   }
 
-  private createCoinDisplay(): void {
-    this.add.text(GAME_WIDTH - 44, 28, '5,250', {
-      fontFamily: 'Arial Black, Arial, sans-serif',
-      fontSize: '14px',
-      fontStyle: 'bold',
-      color: '#ffd700',
-      stroke: '#4a1484',
-      strokeThickness: 3,
-    }).setOrigin(0.5).setDepth(DEPTHS.hud);
+  /**
+   * Navigate with a camera-fade.
+   * @param key    Target scene key.
+   * @param data   Optional scene data.
+   */
+  private goTo(key: SceneKey, data?: Record<string, unknown>): void {
+    SceneNavigator.fadeTo(this, key, data);
   }
 
-  private createAmbientParticles(): void {
-    this.add.particles(0, 0, 'particle_star', {
-      x: { min: 20, max: GAME_WIDTH - 20 },
-      y: { min: GAME_HEIGHT - 95, max: GAME_HEIGHT - 85 },
-      quantity: 1,
-      frequency: 450,
-      lifespan: 4500,
-      speedX: { min: -12, max: 12 },
-      speedY: { min: -80, max: -45 },
-      scale: { start: 0.65, end: 0 },
-      alpha: { start: 0.9, end: 0 },
-      tint: [PALETTE.gold, 0xffffff, PALETTE.purpleLight, PALETTE.green],
-      rotate: { min: 0, max: 360 },
-    }).setDepth(DEPTHS.effects);
-  }
+  // ── Hit zones ─────────────────────────────────────────────────────────────
 
-  private createWandSparkles(): void {
-    this.time.addEvent({
-      delay: 700,
-      loop: true,
-      callback: () => {
-        const g = this.add.graphics()
-          .setDepth(DEPTHS.effects)
-          .setPosition(
-            285 + Phaser.Math.Between(-12, 12),
-            330 + Phaser.Math.Between(-12, 12),
-          );
-        const cols = [PALETTE.gold, PALETTE.green, 0xffffff, PALETTE.purpleLight];
-        g.fillStyle(cols[Phaser.Math.Between(0, 3)], 1);
-        const pts = [];
-        for (let i = 0; i < 8; i++) {
-          const a = (i * Math.PI) / 4;
-          const r = i % 2 === 0 ? 5 : 2;
-          pts.push({ x: Math.cos(a) * r, y: Math.sin(a) * r });
-        }
-        g.fillPoints(pts, true);
-        this.tweens.add({
-          targets: g,
-          y: g.y - 32, alpha: 0, scaleX: 0, scaleY: 0,
-          duration: 650, ease: 'Power2',
-          onComplete: () => g.destroy(),
-        });
-      },
+  private addHitZones(): void {
+
+    // ── Top-bar ────────────────────────────────────────────────────────────
+    this.zone(28,  38,  52,  52);          // settings gear   (placeholder)
+    this.zone(103, 28, 170,  42);          // lives pill       (placeholder)
+    this.zone(188, 28,  36,  36);          // lives "+"        (placeholder)
+    this.zone(272, 28, 170,  42);          // coins pill       (placeholder)
+    this.zone(358, 28,  36,  36);          // coins "+"        (placeholder)
+
+    // ── Primary CTA — PLAY ────────────────────────────────────────────────
+    this.zone(GAME_WIDTH / 2, 695, 190, 72, () => {
+      this.goTo(SCENE.Game, { levelId: 1 } as Record<string, unknown>);
     });
+
+    // ── Secondary CTAs ────────────────────────────────────────────────────
+    this.zone( 62, 695, 112, 64);          // events           (placeholder)
+    this.zone(328, 695, 112, 64);          // shop             (placeholder)
+
+    // ── Bottom nav tabs ───────────────────────────────────────────────────
+    this.zone( 49, 810, 80, 80);           // home tab  (already here)
+    this.zone(146, 810, 80, 80);           // store tab         (placeholder)
+    this.zone(244, 810, 80, 80);           // social tab        (placeholder)
+    this.zone(341, 810, 80, 80);           // profile tab       (placeholder)
   }
 }

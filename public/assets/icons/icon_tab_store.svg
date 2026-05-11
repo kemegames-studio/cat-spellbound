@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 72 72">
+  <defs>
+    <linearGradient id="bg_store" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#8040c0"/>
+      <stop offset="100%" stop-color="#4a1a82"/>
+    </linearGradient>
+    <linearGradient id="bag" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffe066"/>
+      <stop offset="100%" stop-color="#f0a800"/>
+    </linearGradient>
+    <linearGradient id="bag_shine" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.45"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <!-- Background -->
+  <rect width="72" height="72" rx="18" fill="url(#bg_store)"/>
+  <rect x="1" y="1" width="70" height="70" rx="17" fill="none" stroke="#c090f0" stroke-width="1" opacity="0.5"/>
+
+  <!-- Shopping bag body -->
+  <rect x="16" y="30" width="40" height="30" rx="5" fill="url(#bag)"/>
+  <!-- Bag shine -->
+  <rect x="16" y="30" width="40" height="30" rx="5" fill="url(#bag_shine)"/>
+  <!-- Bag inner shadow -->
+  <rect x="18" y="34" width="36" height="24" rx="4" fill="#c88000" opacity="0.2"/>
+
+  <!-- Handle left arc -->
+  <path d="M24 30 Q24 16 36 16 Q48 16 48 30" fill="none" stroke="url(#bag)" stroke-width="4.5" stroke-linecap="round"/>
+  <!-- Handle shine -->
+  <path d="M24 30 Q24 16 36 16 Q48 16 48 30" fill="none" stroke="white" stroke-width="1.5" opacity="0.35" stroke-linecap="round"/>
+
+  <!-- Star on bag -->
+  <g transform="translate(36,45)">
+    <polygon points="0,-8 2.4,-3.1 7.6,-2.5 3.8,1.2 4.7,6.5 0,4 -4.7,6.5 -3.8,1.2 -7.6,-2.5 -2.4,-3.1"
+             fill="#fff7cc" stroke="#d08000" stroke-width="0.8"/>
+  </g>
+</svg>

@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 72 72">
+  <defs>
+    <linearGradient id="navbg3" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#8040c0"/>
+      <stop offset="100%" stop-color="#4a1a82"/>
+    </linearGradient>
+    <linearGradient id="cover" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#8040b0"/>
+      <stop offset="100%" stop-color="#4a1570"/>
+    </linearGradient>
+    <linearGradient id="page" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#f8f4e8"/>
+      <stop offset="100%" stop-color="#d8d0b8"/>
+    </linearGradient>
+  </defs>
+  <!-- Background -->
+  <rect width="72" height="72" rx="18" fill="url(#navbg3)"/>
+  <rect x="1" y="1" width="70" height="70" rx="17" fill="none" stroke="#c090f0" stroke-width="1" opacity="0.5"/>
+
+  <!-- Book shadow -->
+  <rect x="17" y="15" width="38" height="46" rx="4" fill="#000" opacity="0.25"/>
+  <!-- Book back cover -->
+  <rect x="15" y="13" width="38" height="46" rx="4" fill="url(#cover)"/>
+  <!-- Pages block -->
+  <rect x="19" y="14" width="30" height="44" rx="2" fill="url(#page)"/>
+  <!-- Page lines -->
+  <g stroke="#c0b890" stroke-width="0.8" opacity="0.6">
+    <line x1="23" y1="24" x2="45" y2="24"/>
+    <line x1="23" y1="29" x2="45" y2="29"/>
+    <line x1="23" y1="34" x2="45" y2="34"/>
+    <line x1="23" y1="39" x2="42" y2="39"/>
+    <line x1="23" y1="44" x2="40" y2="44"/>
+    <line x1="23" y1="49" x2="43" y2="49"/>
+  </g>
+  <!-- Front cover -->
+  <rect x="15" y="13" width="6" height="46" rx="3" fill="#6030a0"/>
+  <!-- Spine highlight -->
+  <rect x="16" y="14" width="2" height="44" rx="1" fill="#b070e8" opacity="0.5"/>
+  <!-- Clasp / bookmark ribbon -->
+  <rect x="34" y="54" width="5" height="10" rx="2" fill="#ffd700"/>
+  <polygon points="34,64 39,64 36.5,68" fill="#ffaa00"/>
+
+  <!-- Star emblem on cover — centred on page area -->
+  <g transform="translate(32,36)">
+    <polygon points="0,-10 2.9,-4 9.5,-3.1 4.8,1.5 5.9,8.1 0,5 -5.9,8.1 -4.8,1.5 -9.5,-3.1 -2.9,-4"
+             fill="#ffd700" stroke="#ffaa00" stroke-width="1"/>
+    <circle r="3.5" fill="#ffcc00"/>
+  </g>
+</svg>

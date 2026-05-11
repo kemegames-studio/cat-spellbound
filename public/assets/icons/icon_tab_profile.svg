@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 72 72">
+  <defs>
+    <linearGradient id="bg_profile" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#8040c0"/>
+      <stop offset="100%" stop-color="#4a1a82"/>
+    </linearGradient>
+    <radialGradient id="avatar" cx="45%" cy="35%" r="60%">
+      <stop offset="0%" stop-color="#e8e0d8"/>
+      <stop offset="100%" stop-color="#b8a898"/>
+    </radialGradient>
+    <linearGradient id="body_grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#9d60e0"/>
+      <stop offset="100%" stop-color="#6020b0"/>
+    </linearGradient>
+  </defs>
+  <!-- Background -->
+  <rect width="72" height="72" rx="18" fill="url(#bg_profile)"/>
+  <rect x="1" y="1" width="70" height="70" rx="17" fill="none" stroke="#c090f0" stroke-width="1" opacity="0.5"/>
+
+  <!-- Head -->
+  <circle cx="36" cy="26" r="14" fill="url(#avatar)"/>
+  <!-- Head shading -->
+  <circle cx="36" cy="28" r="14" fill="#806050" opacity="0.1"/>
+
+  <!-- Body / shoulders -->
+  <path d="M10 68 Q10 50 36 48 Q62 50 62 68 Z" fill="url(#body_grad)"/>
+  <!-- Body shine -->
+  <path d="M10 68 Q10 50 36 48 Q62 50 62 68 Z" fill="white" opacity="0.12"/>
+
+  <!-- Star badge on chest area (within body) -->
+  <g transform="translate(36,60)">
+    <polygon points="0,-6 1.8,-2.3 5.7,-1.9 2.9,0.9 3.5,4.9 0,3 -3.5,4.9 -2.9,0.9 -5.7,-1.9 -1.8,-2.3"
+             fill="#ffd700" stroke="#d08000" stroke-width="0.7"/>
+  </g>
+
+  <!-- Face details: eyes -->
+  <circle cx="30" cy="24" r="2.5" fill="#333"/>
+  <circle cx="42" cy="24" r="2.5" fill="#333"/>
+  <circle cx="29" cy="23" r="1" fill="white" opacity="0.8"/>
+  <circle cx="41" cy="23" r="1" fill="white" opacity="0.8"/>
+
+  <!-- Smile -->
+  <path d="M30 31 Q36 36 42 31" fill="none" stroke="#a07060" stroke-width="1.5" stroke-linecap="round"/>
+</svg>

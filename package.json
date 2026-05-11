@@ -6,14 +6,19 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "build:android": "npm run build && npx cap sync android",
+    "open:android": "npx cap open android"
   },
   "dependencies": {
+    "@capacitor/android": "^8.3.3",
+    "@capacitor/cli": "^8.3.3",
+    "@capacitor/core": "^8.3.3",
     "phaser": "^3.80.1"
   },
   "devDependencies": {
+    "@types/node": "^20.12.12",
     "typescript": "^5.4.5",
-    "vite": "^5.2.12",
-    "@types/node": "^20.12.12"
+    "vite": "^5.2.12"
   }
 }

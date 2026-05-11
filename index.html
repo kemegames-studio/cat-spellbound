@@ -3,106 +3,42 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-    <meta name="theme-color" content="#1a0a3a" />
+    <meta name="theme-color" content="#0a0418" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    <title>Cat Spellbound — Magic. Mischief. Meowgic!</title>
+    <title>Cat Spellbound</title>
     <style>
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
 
       html, body {
         width: 100%;
         height: 100%;
         overflow: hidden;
-        background: #0a0418;
+        /* Same dark background as game — letterbox bars are invisible */
+        background: #2c1654;
         touch-action: none;
         -webkit-user-select: none;
         user-select: none;
       }
 
       #game-container {
-        position: relative;
-        width: 100%;
-        height: 100%;
-      }
-
-      canvas {
-        display: block;
-        touch-action: none;
-        image-rendering: auto;
-      }
-
-      /* Loading overlay */
-      #loading-overlay {
         position: fixed;
         inset: 0;
-        background: #0a0418;
+        width: 100%;
+        height: 100%;
         display: flex;
-        flex-direction: column;
         align-items: center;
         justify-content: center;
-        z-index: 9999;
-        transition: opacity 0.5s ease;
       }
 
-      #loading-overlay.hidden {
-        opacity: 0;
-        pointer-events: none;
-      }
-
-      .loading-logo {
-        font-size: 2.5rem;
-        font-weight: 900;
-        color: #ffd700;
-        text-shadow: 0 0 20px #ffd70088, 0 0 40px #ff8c0055;
-        letter-spacing: 2px;
-        margin-bottom: 1.5rem;
-        font-family: Georgia, serif;
-      }
-
-      .loading-subtitle {
-        font-size: 0.85rem;
-        color: #9d6fff;
-        letter-spacing: 4px;
-        text-transform: uppercase;
-        margin-bottom: 2rem;
-      }
-
-      .loading-bar-bg {
-        width: 200px;
-        height: 6px;
-        background: #2d1b69;
-        border-radius: 3px;
-        overflow: hidden;
-      }
-
-      .loading-bar-fill {
-        height: 100%;
-        width: 0%;
-        background: linear-gradient(90deg, #7b2fff, #ffd700);
-        border-radius: 3px;
-        transition: width 0.3s ease;
-        animation: loadPulse 1.5s ease-in-out infinite;
-      }
-
-      @keyframes loadPulse {
-        0%, 100% { opacity: 1; }
-        50% { opacity: 0.7; }
+      /* Let Phaser control canvas size — DO NOT override width/height */
+      #game-container canvas {
+        touch-action: none;
+        image-rendering: auto;
       }
     </style>
   </head>
   <body>
-    <div id="loading-overlay">
-      <div class="loading-logo">Cat Spellbound</div>
-      <div class="loading-subtitle">Magic · Mischief · Meowgic</div>
-      <div class="loading-bar-bg">
-        <div class="loading-bar-fill" id="loading-bar"></div>
-      </div>
-    </div>
     <div id="game-container"></div>
     <script type="module" src="/src/main.ts"></script>
   </body>

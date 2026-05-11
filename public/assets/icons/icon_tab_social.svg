@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 72 72">
+  <defs>
+    <linearGradient id="bg_social" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#8040c0"/>
+      <stop offset="100%" stop-color="#4a1a82"/>
+    </linearGradient>
+    <radialGradient id="av1" cx="45%" cy="35%" r="60%">
+      <stop offset="0%" stop-color="#e8e0d8"/>
+      <stop offset="100%" stop-color="#b8a898"/>
+    </radialGradient>
+    <radialGradient id="av2" cx="45%" cy="35%" r="60%">
+      <stop offset="0%" stop-color="#d0c8f8"/>
+      <stop offset="100%" stop-color="#9080d0"/>
+    </radialGradient>
+    <linearGradient id="body2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#7050b8"/>
+      <stop offset="100%" stop-color="#4020808"/>
+    </linearGradient>
+  </defs>
+  <!-- Background -->
+  <rect width="72" height="72" rx="18" fill="url(#bg_social)"/>
+  <rect x="1" y="1" width="70" height="70" rx="17" fill="none" stroke="#c090f0" stroke-width="1" opacity="0.5"/>
+
+  <!-- Back person (right) -->
+  <circle cx="46" cy="26" r="11" fill="url(#av2)"/>
+  <path d="M22 68 Q24 52 46 50 Q64 52 66 68 Z" fill="#5030a0" opacity="0.85"/>
+
+  <!-- Front person (left) -->
+  <circle cx="28" cy="27" r="13" fill="url(#av1)"/>
+  <path d="M8 68 Q8 51 28 49 Q50 51 52 68 Z" fill="#7050c0"/>
+  <!-- Body shine -->
+  <path d="M8 68 Q8 51 28 49 Q50 51 52 68 Z" fill="white" opacity="0.1"/>
+
+  <!-- Front face details -->
+  <circle cx="23" cy="25" r="2.2" fill="#333"/>
+  <circle cx="33" cy="25" r="2.2" fill="#333"/>
+  <circle cx="22" cy="24" r="0.9" fill="white" opacity="0.8"/>
+  <circle cx="32" cy="24" r="0.9" fill="white" opacity="0.8"/>
+  <path d="M23 31 Q28 35 33 31" fill="none" stroke="#a07060" stroke-width="1.4" stroke-linecap="round"/>
+
+  <!-- Heart between them -->
+  <path d="M42 18 Q42 14 46 14 Q50 14 50 18 Q50 22 46 26 Q42 22 42 18 Z" fill="#ff6090"/>
+  <path d="M36 18 Q36 14 40 14 Q44 14 44 18 Q44 22 40 26 Q36 22 36 18 Z" fill="#ff6090"/>
+</svg>
